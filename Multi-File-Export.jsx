@@ -141,35 +141,35 @@ function exportPDF() {
   if(g.win.pnlOps.chkPagesBld.value == true){
     app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
     // books
-    app.activeDocument.layers.item("Bookline").visible = false; // turn off Bookine layer (if it is visible) for single page export
+    // app.activeDocument.layers.item("Bookline").visible = false; // turn off Bookine layer (if it is visible) for single page export
     d.exportFile(ExportFormat.PDF_TYPE, new File(name1), false, preset1);
   };
 
   // Prepress (bleed + spreads)
   if(g.win.pnlOps2.chkSpreadsBld.value == true){
     app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
-    app.activeDocument.layers.item("Bookline").visible = false; // turn on Bookline for spreads export
+    // app.activeDocument.layers.item("Bookline").visible = false; // turn on Bookline for spreads export
     d.exportFile(ExportFormat.PDF_TYPE, new File(name1), false, preset3);
   };
 
   // Prepress (spreads)
   if(g.win.pnlOps.chkSpreads.value == true){
     app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
-    app.activeDocument.layers.item("Bookline").visible = true; // turn on Bookline for spreads export
+    // app.activeDocument.layers.item("Bookline").visible = true; // turn on Bookline for spreads export
     d.exportFile(ExportFormat.PDF_TYPE, new File(name2), false, preset2);
   };
 
   // First Chapter / Low Resolution
   if(g.win.pnlOps.chkLow.value == true){
     app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
-    app.activeDocument.layers.item("Bookline").visible = true; // turn on Bookline for spreads export
+    // app.activeDocument.layers.item("Bookline").visible = true; // turn on Bookline for spreads export
     d.exportFile(ExportFormat.PDF_TYPE, new File(name4), false, preset4);
   };
 
   // High Resolution - No Compression
   if(g.win.pnlOps2.chkHigh.value == true){
     app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
-    app.activeDocument.layers.item("Bookline").visible = false; // turn on Bookline for spreads export
+    // app.activeDocument.layers.item("Bookline").visible = false; // turn on Bookline for spreads export
     d.exportFile(ExportFormat.PDF_TYPE, new File(name5), false, preset6);
   };
 
@@ -177,14 +177,14 @@ function exportPDF() {
   if(g.win.pnlOps2.chkPages.value == true){
     app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
     // books
-    app.activeDocument.layers.item("Bookline").visible = false; // turn off Bookine layer (if it is visible) for single page export
+    // app.activeDocument.layers.item("Bookline").visible = false; // turn off Bookine layer (if it is visible) for single page export
     d.exportFile(ExportFormat.PDF_TYPE, new File(name1), false, preset5);
   };
 
   // IDML
   if(g.win.pnlIDML.chkIDML.value == true){
     // 1 page cover
-    app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
+    // app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
     d.exportFile(ExportFormat.INDESIGN_MARKUP, new File(name3)); // IDML EXPORT
   }
 }
