@@ -184,7 +184,7 @@ function exportPDF() {
   // IDML
   if(g.win.pnlIDML.chkIDML.value == true){
     // 1 page cover
-    // app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
+    app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
     d.exportFile(ExportFormat.INDESIGN_MARKUP, new File(name3)); // IDML EXPORT
   }
 }
