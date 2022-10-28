@@ -8,10 +8,13 @@ Multi-file Export allows you to export multiple PDFs with different
 InDesign export options (1 per) and an IDML at the same time. 
 
 
-v1.1 update - added sig check function
+v1.1 update - added sig check function, added script name & version to palette
 -------------------------------------- */
 
 #targetengine "session"
+
+var scriptName = "Multi-File Export";
+var version = "v1.1"
 
 var g = {};
 var d = app.activeDocument;
@@ -22,7 +25,7 @@ g.win.show();
 // pallette window
 function createDialog() {
   // create panel
-  g.win = new Window("palette", "Export Options");
+  g.win = new Window("palette", scriptName + " " + version);
   g.win.pnlScope = g.win.add("panel");
 
 
