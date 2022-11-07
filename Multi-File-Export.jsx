@@ -1,20 +1,20 @@
 /* --------------------------------------
-Multi-file Export v1.1
+Multi-file Export v1.2
 by Aaron Troia (@atroia)
-Modified Date: 10/26/22
+Modified Date: 11/6/22
 
 Description: 
 Multi-file Export allows you to export multiple PDFs with different 
-InDesign export options (1 per) and an IDML at the same time. 
+InDesign export options and an IDML at the same time. 
 
-
-v1.1 update - added sig check function, added script name & version to palette
+v1.1 - added sig check function, added script name & version to palette
+v1.2 - removed redudnant code in sigCheck function
 -------------------------------------- */
 
 #targetengine "session"
 
 var scriptName = "Multi-File Export";
-var version = "v1.1"
+var version = "v1.2"
 
 var g = {};
 var d = app.activeDocument;
@@ -97,7 +97,7 @@ function createDialog() {
   }
   // check button
    g.win.grButs.check.onClick = function() {
-     check();
+     SigCheck();
   };
   // cancel button
   g.win.grButs.cancel.onClick = function() {
@@ -193,23 +193,21 @@ function exportPDF() {
 }
 
 // This function checks the page length to 16 page signatures for publishing
-function check(){
-  if (d.pages.length > 32) {
-    if (d.pages.length % 16 !== 0){
-        var round_under = (Math.round(d.pages.length/16) * 16);
-        var round_over = (((Math.round(d.pages.length/16)) + 1) * 16);
-        alert(
-          d.pages.length + " pages is not an even sig break.\nTry either " + round_under + " pages or " + round_over + " pages."
-        );
-    } else {
-        alert("Looing good. Your book is at an even sig marker. " + d.pages.length + " pages.")
-    }
-  // for smaller publications, less that 32 pages, its checking against 8 page signatures
-  } else if (d.pages.length < 32) {
-    if (d.pages.length % 8 !== 0) {
-        alert("Hold on there, this page count isnt adding up.");
-      } else {
-      alert("Looking good. Your book is at an even sig marker. " + d.pages.length + " pages.")
-    }
-  }
+function sigCheck(){
+	var pageCount = d.pages.length;
+	if (pageCount >= 32) {
+		var sigMod = 16;
+	} else if (pageCount < 32 && pageCount > 8){
+		var sigMod = 8;
+	} else {
+		alert("There are no sigs, your document is only " + pageCount + " page(s).");
+		exit();
+	}
+	var addPages = ((Math.ceil(pageCount/sigMod)) * sigMod) - pageCount;
+	var removePages = pageCount - (Math.floor(pageCount/sigMod) * sigMod);
+	// var perfectBreak = "This document is " + pageCount + " pages. You're good.";
+	var unperfectBreak = "Your page count " + pageCount + " is not an even signature break. Try adding " + addPages + " pages, or removing " + removePages + " pages.";
+	if (pageCount % sigMod !== 0){
+		alert(unperfectBreak);
+	} 
 }
