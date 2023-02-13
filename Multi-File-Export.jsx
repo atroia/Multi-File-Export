@@ -1,20 +1,20 @@
 /* --------------------------------------
-Multi-file Export v1.2
+Multi-file Export v1.3
 by Aaron Troia (@atroia)
-Modified Date: 11/6/22
+Modified Date: 2/13/22
 
 Description: 
-Multi-file Export allows you to export multiple PDFs with different 
-InDesign export options and an IDML at the same time. 
+Multi-file Export allows you to export multiple PDFs (plus IDML & JPG ) at the same time. 
 
 v1.1 - added sig check function, added script name & version to palette
 v1.2 - removed redudnant code in sigCheck function
+v1.3 - asyncronusExport + cover image export
 -------------------------------------- */
 
 #targetengine "session"
 
 var scriptName = "Multi-File Export";
-var version = "v1.2"
+var version = "v1.3"
 
 var g = {};
 var d = app.activeDocument;
@@ -22,7 +22,10 @@ createDialog();
 g.win.show();
 
 
-// pallette window
+/* ========================= */
+/* ==== PALLETTE WINDOW ==== */
+/* ========================= */
+
 function createDialog() {
   // create panel
   g.win = new Window("palette", scriptName + " " + version);
@@ -80,6 +83,16 @@ function createDialog() {
     undefined, 
     "IDML"
     );
+	
+  // Cover Image checkbox
+  g.win.coverIMG = g.win.add("panel", undefined, "JPG Export");
+  g.win.coverIMG.alignChildren = "left";
+  g.win.coverIMG.minimumSize = [235,20];
+  g.win.coverIMG.chkIDML = g.win.coverIMG.add(
+    "checkbox", 
+    undefined, 
+    "Cover JPG"
+    );
 
   for (var i = 0; i < g.win.pnlOps.length; i++) {
     g.win.pnlOps.children[i].value = true;
@@ -105,7 +118,10 @@ function createDialog() {
   };
 }
 
-// this is the PDF export function
+/* ======================== */
+/* ====  PDF(s) Export ==== */
+/* ======================== */
+
 function exportPDF() {
   // These are the PDF Export settings names from InDesign
   var preset1 = app.pdfExportPresets.itemByName("PrePress (bleed)");
@@ -190,9 +206,17 @@ function exportPDF() {
     app.pdfExportPreferences.pageRange = PageRange.ALL_PAGES;
     d.exportFile(ExportFormat.INDESIGN_MARKUP, new File(name3)); // IDML EXPORT
   }
+	
+  // Cover Image
+  if(g.win.coverIMG.chkIDML.value == true){
+    exportCover();
+  }
 }
 
-// This function checks the page length to 16 page signatures for publishing
+/* =========================== */
+/* ====  Signature Check  ==== */
+/* =========================== */
+
 function sigCheck(){
 	var pageCount = d.pages.length;
 	if (pageCount >= 32) {
@@ -210,4 +234,66 @@ function sigCheck(){
 	if (pageCount % sigMod !== 0){
 		alert(unperfectBreak);
 	} 
+}
+
+/* =============================*/
+/* ====  Cover JPG Export  ==== */
+/* =============================*/
+
+function exportCover() {
+
+  app.jpegExportPreferences.properties = {
+   jpegRenderingStyle: JPEGOptionsFormat.BASELINE_ENCODING,
+   jpegExportRange: ExportRangeOrAllPages.EXPORT_RANGE,
+   jpegQuality: JPEGOptionsQuality.MAXIMUM,
+   jpegColorSpace: JpegColorSpaceEnum.RGB,
+   // exportingSpread: true, // Uncomment if spreads
+   simulateOverprint: false,
+   useDocumentBleeds: false,
+   embedColorProfile: true,
+   exportResolution: 300,
+   antiAlias: true,
+}
+
+  if (d.pages.length > 6 && d.pages.length <= 64 ) {
+    // for Signs
+    app.jpegExportPreferences.pageString = "1"; // Page range, only VALID if EXPORT_RANGE used
+  } else if (d.pages.length == 3 || d.pages.length == 5) {
+    // for book covers laid out as separate pages
+    app.jpegExportPreferences.pageString = "3"; // Page range, only VALID if EXPORT_RANGE used
+  } else if (d.pages.length == 1){
+    // for book covers laid out as one page
+    app.jpegExportPreferences.pageString = "1";
+  } 
+
+    if (d.saved) {
+      thePath = String(d.fullName).replace(/\..+$/, "") + ".jpg";
+      // thePath = String(d.fullName).replace(/\..+$/, "") + ".jpg";
+      // thePath = String(new File(thePath).saveDlg()); // use this line if you want the save dialog to show
+      thePath = String(new File(thePath));
+    } else {
+      // thePath = String((new File).saveDlg()); // use this line if you want the save dialog to show
+      thePath = String(new File());
+    } 
+
+
+    thePath = thePath.replace(/\.jpg$/, ""); 
+    // thePath2 = thePath.replace(/(\d+b|\.pdf$)/, ""); 
+    name1 = thePath+".jpg"; 
+
+
+    try {
+      if (app.activeDocument.layers.item("Bookline").isValid == true){
+        app.activeDocument.layers.item("Bookline").visible = false; // turn off Bookine layer (if it is visible) for single page export
+        d.exportFile(ExportFormat.JPG, new File(name1), false);
+        // alert("Your Cover Image has exported.");
+      } else { // if no layer named "Bookline" exisits
+        d.exportFile(ExportFormat.JPG, new File(name1), false);
+        // alert("Your Cover Image has exported.");
+      }
+    } catch (errExport) {
+      // alert('ERROR: The PDF file is either selected or open.');
+      alert(errExport.line);
+    }
+
 }
